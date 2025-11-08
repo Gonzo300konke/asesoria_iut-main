@@ -53,7 +53,7 @@ class TipoResponsableController extends Controller
                 'sometimes',
                 'string',
                 'max:255',
-                Rule::unique('tipos_responsables', 'nombre')->ignore($tipoResponsable->id),
+                Rule::unique('tipos_responsables', 'nombre')->ignore($tipoResponsable->getKey()),
             ],
         ]);
 
@@ -67,9 +67,17 @@ class TipoResponsableController extends Controller
      */
     public function destroy(TipoResponsable $tipoResponsable)
     {
+        // Verificar permisos: solo administradores pueden eliminar datos
+        if (! auth()->user()->canDeleteData()) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'No tienes permisos para eliminar datos del sistema.'], 403);
+            }
+
+            abort(403, 'No tienes permisos para eliminar datos del sistema.');
+        }
+
         $tipoResponsable->delete();
 
         return response()->json(null, 204);
     }
 }
-

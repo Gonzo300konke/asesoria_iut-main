@@ -25,7 +25,7 @@ class RolController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre'   => ['required', 'string', 'max:255', 'unique:roles,nombre'],
+            'nombre' => ['required', 'string', 'max:255', 'unique:roles,nombre'],
             'permisos' => ['nullable', 'array'],
         ]);
 
@@ -50,11 +50,11 @@ class RolController extends Controller
     public function update(Request $request, Rol $rol)
     {
         $validated = $request->validate([
-            'nombre'   => [
+            'nombre' => [
                 'sometimes',
                 'string',
                 'max:255',
-                Rule::unique('roles', 'nombre')->ignore($rol->id),
+                Rule::unique('roles', 'nombre')->ignore($rol->getKey()),
             ],
             'permisos' => ['nullable', 'array'],
         ]);
@@ -69,6 +69,15 @@ class RolController extends Controller
      */
     public function destroy(Rol $rol)
     {
+        // Verificar permisos: solo administradores pueden eliminar datos
+        if (! auth()->user()->canDeleteData()) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'No tienes permisos para eliminar datos del sistema.'], 403);
+            }
+
+            abort(403, 'No tienes permisos para eliminar datos del sistema.');
+        }
+
         $rol->delete();
 
         return response()->json(null, 204);

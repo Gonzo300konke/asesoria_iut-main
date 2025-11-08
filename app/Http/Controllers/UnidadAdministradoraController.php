@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Organismo;
 use App\Models\UnidadAdministradora;
 use Illuminate\Http\Request;
@@ -11,31 +12,28 @@ class UnidadAdministradoraController extends Controller
     /**
      * Listar todas las Unidades Administradoras.
      */
-   public function index()
-{
-    $unidades = UnidadAdministradora::with(['organismo', 'dependencias'])->paginate(10);
+    public function index()
+    {
+        $unidades = UnidadAdministradora::with(['organismo', 'dependencias'])->paginate(10);
 
-    return view('unidades.index', compact('unidades'));
-}
+        return view('unidades.index', compact('unidades'));
+    }
 
+    public function create()
+    {
+        // Cargar los organismos para el select
+        $organismos = Organismo::all();
 
-public function create()
-{
-    // Cargar los organismos para el select
-    $organismos = Organismo::all();
+        // Retornar la vista del formulario
+        return view('unidades.create', compact('organismos'));
+    }
 
-    // Retornar la vista del formulario
-    return view('unidades.create', compact('organismos'));
-}
+    public function edit(UnidadAdministradora $unidadAdministradora)
+    {
+        $organismos = Organismo::all();
 
-public function edit(UnidadAdministradora $unidadAdministradora)
-{
-    $organismos = Organismo::all();
-
-    return view('unidades.edit', compact('unidadAdministradora', 'organismos'));
-}
-
-
+        return view('unidades.edit', compact('unidadAdministradora', 'organismos'));
+    }
 
     /**
      * Guardar una nueva Unidad Administradora.
@@ -44,8 +42,8 @@ public function edit(UnidadAdministradora $unidadAdministradora)
     {
         $validated = $request->validate([
             'organismo_id' => ['required', 'exists:organismos,id'],
-            'codigo'       => ['required', 'string', 'max:50', 'unique:unidades_administradoras,codigo'],
-            'nombre'       => ['required', 'string', 'max:255'],
+            'codigo' => ['required', 'string', 'max:50', 'unique:unidades_administradoras,codigo'],
+            'nombre' => ['required', 'string', 'max:255'],
         ]);
 
         $unidad = UnidadAdministradora::create($validated);
@@ -60,7 +58,7 @@ public function edit(UnidadAdministradora $unidadAdministradora)
     {
         $unidadAdministradora->load(['organismo', 'dependencias']);
 
-        return response()->json($unidadAdministradora);
+        return view('unidades.show', compact('unidadAdministradora'));
     }
 
     /**
@@ -70,18 +68,18 @@ public function edit(UnidadAdministradora $unidadAdministradora)
     {
         $validated = $request->validate([
             'organismo_id' => ['sometimes', 'exists:organismos,id'],
-            'codigo'       => [
+            'codigo' => [
                 'sometimes',
                 'string',
                 'max:50',
-                Rule::unique('unidades_administradoras', 'codigo')->ignore($unidadAdministradora->id),
+                Rule::unique('unidades_administradoras', 'codigo')->ignore($unidadAdministradora->getKey()),
             ],
-            'nombre'       => ['sometimes', 'string', 'max:255'],
+            'nombre' => ['sometimes', 'string', 'max:255'],
         ]);
 
-        $unidadAdministradora->update($validated);
+    $unidadAdministradora->update($validated);
 
-        return response()->json($unidadAdministradora);
+    return redirect()->route('unidades.index')->with('success', 'Unidad actualizada correctamente');
     }
 
     /**
@@ -89,12 +87,17 @@ public function edit(UnidadAdministradora $unidadAdministradora)
      */
     public function destroy(UnidadAdministradora $unidadAdministradora)
     {
+        // Verificar permisos: solo administradores pueden eliminar datos
+        if (! auth()->user()->canDeleteData()) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'No tienes permisos para eliminar datos del sistema.'], 403);
+            }
+
+            abort(403, 'No tienes permisos para eliminar datos del sistema.');
+        }
+
         $unidadAdministradora->delete();
 
         return response()->json(null, 204);
     }
 }
-
-
-
-

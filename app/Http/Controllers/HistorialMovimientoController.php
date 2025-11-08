@@ -25,8 +25,8 @@ class HistorialMovimientoController extends Controller
     {
         $validated = $request->validate([
             'movimiento_id' => ['required', 'exists:movimientos,id'],
-            'fecha'         => ['required', 'date'],
-            'detalle'       => ['required', 'string', 'max:500'],
+            'fecha' => ['required', 'date'],
+            'detalle' => ['required', 'string', 'max:500'],
         ]);
 
         $historial = HistorialMovimiento::create($validated);
@@ -51,8 +51,8 @@ class HistorialMovimientoController extends Controller
     {
         $validated = $request->validate([
             'movimiento_id' => ['sometimes', 'exists:movimientos,id'],
-            'fecha'         => ['sometimes', 'date'],
-            'detalle'       => ['sometimes', 'string', 'max:500'],
+            'fecha' => ['sometimes', 'date'],
+            'detalle' => ['sometimes', 'string', 'max:500'],
         ]);
 
         $historialMovimiento->update($validated);
@@ -70,4 +70,3 @@ class HistorialMovimientoController extends Controller
         return response()->json(null, 204);
     }
 }
-

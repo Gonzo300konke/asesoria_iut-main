@@ -54,6 +54,26 @@
                     @enderror
                 </div>
 
+                <!-- Responsable -->
+                <div>
+                    <label for="responsable_id" class="block text-sm font-medium text-gray-700">
+                        Responsable (opcional)
+                    </label>
+                    <select name="responsable_id" id="responsable_id"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                                   focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        <option value="">-- Ninguno --</option>
+                        @foreach($responsables as $resp)
+                            <option value="{{ $resp->id }}" {{ old('responsable_id') == $resp->id ? 'selected' : '' }}>
+                                {{ $resp->nombre }} {{ $resp->apellido ?? '' }} @if($resp->cedula) ({{ $resp->cedula }})@endif
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('responsable_id')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Botones -->
                 <div class="flex justify-end space-x-3">
                     <a href="{{ route('dependencias.index') }}" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400">

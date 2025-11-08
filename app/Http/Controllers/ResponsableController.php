@@ -25,10 +25,10 @@ class ResponsableController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'tipo_id'  => ['required', 'exists:tipos_responsables,id'],
-            'cedula'   => ['required', 'string', 'max:20', 'unique:responsables,cedula'],
-            'nombre'   => ['required', 'string', 'max:255'],
-            'correo'   => ['nullable', 'email', 'max:255'],
+            'tipo_id' => ['required', 'exists:tipos_responsables,id'],
+            'cedula' => ['required', 'string', 'max:20', 'unique:responsables,cedula'],
+            'nombre' => ['required', 'string', 'max:255'],
+            'correo' => ['nullable', 'email', 'max:255'],
             'telefono' => ['nullable', 'string', 'max:50'],
         ]);
 
@@ -53,15 +53,15 @@ class ResponsableController extends Controller
     public function update(Request $request, Responsable $responsable)
     {
         $validated = $request->validate([
-            'tipo_id'  => ['sometimes', 'exists:tipos_responsables,id'],
-            'cedula'   => [
+            'tipo_id' => ['sometimes', 'exists:tipos_responsables,id'],
+            'cedula' => [
                 'sometimes',
                 'string',
                 'max:20',
-                Rule::unique('responsables', 'cedula')->ignore($responsable->id),
+                Rule::unique('responsables', 'cedula')->ignore($responsable->getKey()),
             ],
-            'nombre'   => ['sometimes', 'string', 'max:255'],
-            'correo'   => ['nullable', 'email', 'max:255'],
+            'nombre' => ['sometimes', 'string', 'max:255'],
+            'correo' => ['nullable', 'email', 'max:255'],
             'telefono' => ['nullable', 'string', 'max:50'],
         ]);
 
@@ -75,6 +75,15 @@ class ResponsableController extends Controller
      */
     public function destroy(Responsable $responsable)
     {
+        // Verificar permisos: solo administradores pueden eliminar datos
+        if (! auth()->user()->canDeleteData()) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'No tienes permisos para eliminar datos del sistema.'], 403);
+            }
+
+            abort(403, 'No tienes permisos para eliminar datos del sistema.');
+        }
+
         $responsable->delete();
 
         return response()->json(null, 204);

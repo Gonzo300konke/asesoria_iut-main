@@ -5,6 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Eloquent model Dependencia.
+ *
+ * @property int $id
+ * @property int|null $responsable_id
+ */
 class Dependencia extends Model
 {
     use HasFactory;
@@ -21,6 +27,7 @@ class Dependencia extends Model
         'unidad_administradora_id',
         'codigo',
         'nombre',
+        'responsable_id',
     ];
 
     /**
@@ -38,5 +45,12 @@ class Dependencia extends Model
     {
         return $this->hasMany(Bien::class);
     }
-}
 
+    /**
+     * Relación: La dependencia puede tener un responsable asignado.
+     */
+    public function responsable()
+    {
+        return $this->belongsTo(Responsable::class, 'responsable_id');
+    }
+}

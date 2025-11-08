@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "export-diagrams": "node -e \"const {spawnSync}=require('child_process');const glob=require('glob');const path=require('path');const files=glob.sync('docs/diagrams/*.mmd');for(const f of files){const out=path.join('docs','diagrams','exported', path.basename(f, '.mmd')+'.svg');console.log('Export',f,'->',out);spawnSync('npx',['@mermaid-js/mermaid-cli','-i',f,'-o',out],{stdio:'inherit'});}console.log('Done');\""
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.1.13",

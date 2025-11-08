@@ -27,21 +27,10 @@
                     @enderror
                 </div>
 
-                <!-- Responsable -->
+                <!-- Responsable: se asigna a nivel de Dependencia -->
                 <div>
-                    <label for="responsable_id" class="block text-sm font-semibold text-gray-700 mb-2">Responsable</label>
-                    <select name="responsable_id" id="responsable_id"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-                        <option value="">Seleccione...</option>
-                        @foreach($responsables as $resp)
-                            <option value="{{ $resp->id }}" {{ old('responsable_id') == $resp->id ? 'selected' : '' }}>
-                                {{ $resp->nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('responsable_id')
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                    @enderror
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Responsable</label>
+                    <div id="responsable_display" class="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-700">Seleccione una dependencia para ver el responsable asignado</div>
                 </div>
 
                 <!-- Código -->
@@ -129,4 +118,39 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Mostrar responsable según la dependencia seleccionada (cargadas en el servidor con dependencia.responsable)
+    const dependenciaSelect = document.getElementById('dependencia_id');
+    const responsableDisplay = document.getElementById('responsable_display');
+
+    const dependencias = {
+        @foreach($dependencias as $d)
+            '{{ $d->id }}': {
+                nombre: `{{ addslashes($d->nombre) }}`,
+                responsable: {!! json_encode($d->responsable ? $d->responsable->nombre : null) !!}
+            },
+        @endforeach
+    };
+
+    function actualizarResponsable() {
+        const id = dependenciaSelect.value;
+        if (!id) {
+            responsableDisplay.textContent = 'Seleccione una dependencia para ver el responsable asignado';
+            return;
+        }
+        const dep = dependencias[id];
+        if (dep && dep.responsable) {
+            responsableDisplay.textContent = dep.responsable;
+        } else {
+            responsableDisplay.textContent = 'No hay responsable asignado para esta dependencia';
+        }
+    }
+
+    dependenciaSelect.addEventListener('change', actualizarResponsable);
+    // Inicializar
+    actualizarResponsable();
+</script>
+@endpush
 

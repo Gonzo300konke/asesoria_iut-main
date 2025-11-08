@@ -3,16 +3,16 @@
         <div class="flex justify-between items-center h-16">
             <!-- Logo -->
             <div class="flex-shrink-0 text-xl font-bold">
-                🏢 Inventario
+            🏢 SISTEMA DE GESTION
             </div>
 
             <!-- Links -->
             <div class="hidden md:flex space-x-1 items-center">
-                <a href="{{ auth()->check() ? (auth()->user()->isAdmin() ? route('usuarios.index') : route('bienes.index')) : route('login') }}" class="px-3 py-2 rounded hover:bg-blue-500">Inicio</a>
+                <a href="/" class="px-3 py-2 rounded hover:bg-blue-500">Inicio</a>
                 <a href="{{ route('organismos.index') }}" class="px-3 py-2 rounded hover:bg-blue-500">Organismos</a>
-                <a href="{{ route('bienes.index') }}" class="px-3 py-2 rounded hover:bg-blue-500">Bienes</a>
                 <a href="{{ route('unidades.index') }}" class="px-3 py-2 rounded hover:bg-blue-500">Unidades</a>
                 <a href="{{ route('dependencias.index') }}" class="px-3 py-2 rounded hover:bg-blue-500">Dependencias</a>
+                <a href="{{ route('bienes.index') }}" class="px-3 py-2 rounded hover:bg-blue-500">Bienes</a>
                 <a href="{{ route('usuarios.index') }}" class="px-3 py-2 rounded hover:bg-blue-500">Usuarios</a>
             </div>
 

@@ -13,29 +13,33 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    // En AuthController.php (El original que subiste)
+
     public function login(Request $request)
     {
-        $request->validate([
-            'correo' => 'required|email',
-            'password' => 'required',
-        ]);
+        // ... validación ...
 
         $usuario = Usuario::where('correo', $request->correo)
-                          ->where('activo', true)
-                          ->first();
+            ->where('activo', true)
+            ->first();
 
+        // Esta línea es la única que necesitas.
+        // Comprueba si el usuario existe Y si el hash de la contraseña coincide.
         if ($usuario && \Hash::check($request->password, $usuario->hash_password)) {
+
+            // Inicia sesión (incluyendo el "Recordarme")
             Auth::login($usuario, $request->boolean('remember'));
             $request->session()->regenerate();
 
-            // Redirigir según el tipo de usuario
+            // Redirige según el rol
             if ($usuario->isAdmin()) {
-                return redirect()->intended(route('usuarios.index'));
+                return redirect()->route('usuarios.index');
             }
 
-            return redirect()->intended(route('bienes.index'));
+            return redirect()->route('bienes.index');
         }
 
+        // Si el IF de arriba falla, se ejecuta esta línea
         return back()->with('error', 'Las credenciales no coinciden con nuestros registros')->withInput();
     }
 
@@ -48,5 +52,3 @@ class AuthController extends Controller
         return redirect('/');
     }
 }
-
-

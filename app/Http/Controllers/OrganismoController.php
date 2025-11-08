@@ -11,11 +11,12 @@ class OrganismoController extends Controller
     /**
      * Listar todos los organismos.
      */
-   public function index()
-{
-    $organismos = Organismo::paginate(10);
-    return view('organismos.index', compact('organismos'));
-}
+    public function index()
+    {
+        $organismos = Organismo::paginate(10);
+
+        return view('organismos.index', compact('organismos'));
+    }
 
     /**
      * Mostrar formulario para crear organismo.
@@ -47,7 +48,7 @@ class OrganismoController extends Controller
     {
         $organismo->load('unidadesAdministradoras');
 
-        return response()->json($organismo);
+        return view('organismos.show', compact('organismo'));
     }
 
     /**
@@ -60,14 +61,14 @@ class OrganismoController extends Controller
                 'sometimes',
                 'string',
                 'max:50',
-                Rule::unique('organismos', 'codigo')->ignore($organismo->id),
+                Rule::unique('organismos', 'codigo')->ignore($organismo->getKey()),
             ],
             'nombre' => ['sometimes', 'string', 'max:255'],
         ]);
 
-        $organismo->update($validated);
+    $organismo->update($validated);
 
-        return response()->json($organismo);
+    return redirect()->route('organismos.index')->with('success', 'Organismo actualizado correctamente');
     }
 
     /**
@@ -75,9 +76,17 @@ class OrganismoController extends Controller
      */
     public function destroy(Organismo $organismo)
     {
+        // Verificar permisos: solo administradores pueden eliminar datos
+        if (! auth()->user()->canDeleteData()) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'No tienes permisos para eliminar datos del sistema.'], 403);
+            }
+
+            abort(403, 'No tienes permisos para eliminar datos del sistema.');
+        }
+
         $organismo->delete();
 
         return response()->json(null, 204);
     }
 }
-

@@ -27,11 +27,13 @@ class CreateAdmin extends Command
         // Validar que no exista un usuario con la misma cédula o correo
         if (Usuario::where('cedula', $cedula)->exists()) {
             $this->error("Ya existe un usuario con la cédula: {$cedula}");
+
             return 1;
         }
 
         if (Usuario::where('correo', $correo)->exists()) {
             $this->error("Ya existe un usuario con el correo: {$correo}");
+
             return 1;
         }
 

@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Movimiento extends Model
 {
     protected $table = 'movimientos';
+
     public $timestamps = false;
 
     protected $fillable = ['bien_id', 'tipo', 'fecha', 'observaciones', 'usuario_id'];
+
     protected $casts = ['fecha' => 'datetime'];
 
     public function bien()

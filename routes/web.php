@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BienController;
 use App\Http\Controllers\DependenciaController;
@@ -11,6 +10,7 @@ use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ResponsableController;
 use App\Http\Controllers\UnidadAdministradoraController;
 use App\Http\Controllers\UsuarioController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,10 +25,11 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     if (auth()->check()) {
         // Si ya está autenticado, redirigir según rol
-        return auth()->user()->isAdmin() 
+        return auth()->user()->isAdmin()
             ? redirect()->route('usuarios.index')
             : redirect()->route('bienes.index');
     }
+
     // Si no está autenticado, mostrar login
     return redirect()->route('login');
 })->name('dashboard');
@@ -53,17 +54,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 */
 
 Route::middleware(['auth', 'redirigir.rol'])->group(function () {
-    Route::resource('bienes', BienController::class);
-    Route::resource('dependencias', DependenciaController::class);
+    Route::resource('bienes', BienController::class)->parameters(['bienes' => 'bien']);
+    Route::resource('dependencias', DependenciaController::class)->parameters(['dependencias' => 'dependencia']);
     Route::resource('historial-movimientos', HistorialMovimientoController::class);
     Route::resource('movimientos', MovimientoController::class);
     Route::resource('organismos', OrganismoController::class);
     Route::resource('reportes', ReporteController::class);
     Route::resource('responsables', ResponsableController::class);
-    Route::resource('unidades', UnidadAdministradoraController::class);
-    Route::resource('usuarios', UsuarioController::class);
+    Route::resource('unidades', UnidadAdministradoraController::class)->parameters(['unidades' => 'unidadAdministradora']);
+    Route::resource('usuarios', UsuarioController::class)->parameters(['usuarios' => 'usuario']);
 });
-
-
-
-

@@ -24,9 +24,9 @@ class ReporteController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'usuario_id'       => ['required', 'exists:usuarios,id'],
-            'tipo'             => ['required', 'string', 'max:100'],
-            'fecha_generado'   => ['required', 'date'],
+            'usuario_id' => ['required', 'exists:usuarios,id'],
+            'tipo' => ['required', 'string', 'max:100'],
+            'fecha_generado' => ['required', 'date'],
             'archivo_pdf_path' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -51,9 +51,9 @@ class ReporteController extends Controller
     public function update(Request $request, Reporte $reporte)
     {
         $validated = $request->validate([
-            'usuario_id'       => ['sometimes', 'exists:usuarios,id'],
-            'tipo'             => ['sometimes', 'string', 'max:100'],
-            'fecha_generado'   => ['sometimes', 'date'],
+            'usuario_id' => ['sometimes', 'exists:usuarios,id'],
+            'tipo' => ['sometimes', 'string', 'max:100'],
+            'fecha_generado' => ['sometimes', 'date'],
             'archivo_pdf_path' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -72,4 +72,3 @@ class ReporteController extends Controller
         return response()->json(null, 204);
     }
 }
-

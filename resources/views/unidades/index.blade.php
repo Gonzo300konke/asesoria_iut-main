@@ -47,23 +47,12 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-right space-x-2">
-                                    <a href="{{ route('unidades.show', $unidad) }}"
-                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100">
-                                        <x-heroicon-o-eye class="w-4 h-4 mr-1"/> Ver
-                                    </a>
-                                    <a href="{{ route('unidades.edit', $unidad) }}"
-                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-yellow-600 bg-yellow-50 rounded hover:bg-yellow-100">
-                                        <x-heroicon-o-pencil-square class="w-4 h-4 mr-1"/> Editar
-                                    </a>
-                                    <form action="{{ route('unidades.destroy', $unidad) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                onclick="return confirm('¿Seguro que deseas eliminar esta unidad?')"
-                                                class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded hover:bg-red-100">
-                                            <x-heroicon-o-trash class="w-4 h-4 mr-1"/> Eliminar
-                                        </button>
-                                    </form>
+                                    @include('components.action-buttons', [
+                                        'resource' => 'unidades',
+                                        'model' => $unidad,
+                                        'confirm' => "¿Seguro que deseas eliminar esta unidad?",
+                                        'label' => $unidad->nombre
+                                    ])
                                 </td>
                             </tr>
                         @empty

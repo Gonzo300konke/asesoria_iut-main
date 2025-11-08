@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Movimiento;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class MovimientoController extends Controller
 {
@@ -25,11 +24,11 @@ class MovimientoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'bien_id'       => ['required', 'exists:bienes,id'],
-            'tipo'          => ['required', 'string', 'max:50'],
-            'fecha'         => ['required', 'date'],
+            'bien_id' => ['required', 'exists:bienes,id'],
+            'tipo' => ['required', 'string', 'max:50'],
+            'fecha' => ['required', 'date'],
             'observaciones' => ['nullable', 'string', 'max:500'],
-            'usuario_id'    => ['required', 'exists:usuarios,id'],
+            'usuario_id' => ['required', 'exists:usuarios,id'],
         ]);
 
         $movimiento = Movimiento::create($validated);
@@ -53,11 +52,11 @@ class MovimientoController extends Controller
     public function update(Request $request, Movimiento $movimiento)
     {
         $validated = $request->validate([
-            'bien_id'       => ['sometimes', 'exists:bienes,id'],
-            'tipo'          => ['sometimes', 'string', 'max:50'],
-            'fecha'         => ['sometimes', 'date'],
+            'bien_id' => ['sometimes', 'exists:bienes,id'],
+            'tipo' => ['sometimes', 'string', 'max:50'],
+            'fecha' => ['sometimes', 'date'],
             'observaciones' => ['nullable', 'string', 'max:500'],
-            'usuario_id'    => ['sometimes', 'exists:usuarios,id'],
+            'usuario_id' => ['sometimes', 'exists:usuarios,id'],
         ]);
 
         $movimiento->update($validated);
@@ -75,4 +74,3 @@ class MovimientoController extends Controller
         return response()->json(null, 204);
     }
 }
-

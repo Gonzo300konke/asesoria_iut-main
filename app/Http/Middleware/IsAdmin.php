@@ -13,7 +13,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || !$request->user()->isAdmin()) {
+        if (! $request->user() || ! $request->user()->isAdmin()) {
             return response()->json([
                 'message' => 'No tienes permisos para realizar esta acción. Solo administradores pueden acceder.',
                 'error' => 'Unauthorized',

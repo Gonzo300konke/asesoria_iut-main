@@ -2,33 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EstadoBien;
 use App\Models\Bien;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Enums\EstadoBien;
 
 class BienController extends Controller
 {
     /**
      * Listar todos los bienes.
      */
-  // BienController.php
-public function index()
-{
-    // Incluimos relaciones para evitar N+1
-    $bienes = Bien::with(['dependencia', 'responsable', 'movimientos'])->paginate(10);
+    // BienController.php
+    public function index()
+    {
+        // Incluimos relaciones para evitar N+1
+    // Ahora el responsable se obtiene a través de la dependencia
+    $bienes = Bien::with(['dependencia.responsable', 'movimientos'])->paginate(10);
 
-    return view('bienes.index', compact('bienes')); // Only passes $bienes
-}
+        return view('bienes.index', compact('bienes')); // Only passes $bienes
+    }
 
     /**
      * Mostrar formulario de creación.
      */
     public function create()
     {
-        $dependencias = \App\Models\Dependencia::all();
-        $responsables = \App\Models\Responsable::all();
-        return view('bienes.create', compact('dependencias', 'responsables'));
+    // Cargamos las dependencias con su responsable para mostrar al seleccionar
+    $dependencias = \App\Models\Dependencia::with('responsable')->get();
+
+    return view('bienes.create', compact('dependencias'));
     }
 
     /**
@@ -38,15 +40,15 @@ public function index()
     {
         $validated = $request->validate([
             'dependencia_id' => ['required', 'exists:dependencias,id'],
-            'responsable_id' => ['required', 'exists:responsables,id'],
-            'codigo'         => ['required', 'string', 'max:50', 'unique:bienes,codigo'],
-            'descripcion'    => ['required', 'string', 'max:255'],
-            'ubicacion'      => ['nullable', 'string', 'max:255'],
-            'estado'         => ['required', Rule::enum(EstadoBien::class)],
+            'codigo' => ['required', 'string', 'max:50', 'unique:bienes,codigo'],
+            'descripcion' => ['required', 'string', 'max:255'],
+            'ubicacion' => ['nullable', 'string', 'max:255'],
+            'estado' => ['required', Rule::enum(EstadoBien::class)],
             'fecha_registro' => ['required', 'date'],
         ]);
 
-        $bien = Bien::create($validated);
+    // El responsable se obtiene dinámicamente a través de la dependencia; no lo almacenamos en la tabla bienes.
+    $bien = Bien::create($validated);
 
         return redirect()
             ->route('bienes.index')
@@ -58,7 +60,7 @@ public function index()
      */
     public function show(Bien $bien)
     {
-        $bien->load(['dependencia', 'responsable', 'movimientos']);
+    $bien->load(['dependencia.responsable', 'movimientos']);
 
         return view('bienes.show', compact('bien'));
     }
@@ -68,7 +70,9 @@ public function index()
      */
     public function edit(Bien $bien)
     {
-        return view('bienes.edit', compact('bien'));
+    // Para editar mostramos la lista de dependencias (si se necesita cambiar)
+    $dependencias = \App\Models\Dependencia::with('responsable')->get();
+    return view('bienes.edit', compact('bien', 'dependencias'));
     }
 
     /**
@@ -78,19 +82,20 @@ public function index()
     {
         $validated = $request->validate([
             'dependencia_id' => ['sometimes', 'exists:dependencias,id'],
-            'responsable_id' => ['sometimes', 'exists:responsables,id'],
-            'codigo'         => [
+            'codigo' => [
                 'sometimes',
                 'string',
                 'max:50',
-                Rule::unique('bienes', 'codigo')->ignore($bien->id),
+                Rule::unique('bienes', 'codigo')->ignore($bien->getKey()),
             ],
-            'descripcion'    => ['sometimes', 'string', 'max:255'],
-            'ubicacion'      => ['nullable', 'string', 'max:255'],
-            'estado'         => ['sometimes', Rule::enum(EstadoBien::class)],
+            'descripcion' => ['sometimes', 'string', 'max:255'],
+            'ubicacion' => ['nullable', 'string', 'max:255'],
+            'estado' => ['sometimes', Rule::enum(EstadoBien::class)],
             'fecha_registro' => ['sometimes', 'date'],
         ]);
 
+        // Si se cambió la dependencia, actualizar responsable según dependencia
+        // El responsable es gestionado por la dependencia; sólo actualizamos los campos del bien.
         $bien->update($validated);
 
         return redirect()
@@ -103,6 +108,15 @@ public function index()
      */
     public function destroy(Bien $bien)
     {
+        // Verificar permisos: solo administradores pueden eliminar datos
+        if (! auth()->user()->canDeleteData()) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'No tienes permisos para eliminar datos del sistema.'], 403);
+            }
+
+            abort(403, 'No tienes permisos para eliminar datos del sistema.');
+        }
+
         $bien->delete();
 
         return redirect()
@@ -110,5 +124,3 @@ public function index()
             ->with('success', 'Bien eliminado correctamente.');
     }
 }
-
-

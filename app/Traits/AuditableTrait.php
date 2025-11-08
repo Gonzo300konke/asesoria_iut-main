@@ -20,8 +20,8 @@ trait AuditableTrait
 
         static::updated(function ($model) {
             $cambios = $model->getChanges();
-            
-            if (!empty($cambios)) {
+
+            if (! empty($cambios)) {
                 $valores_anteriores = [];
                 foreach (array_keys($cambios) as $campo) {
                     $valores_anteriores[$campo] = $model->getOriginal($campo);
@@ -33,7 +33,7 @@ trait AuditableTrait
                     operacion: 'UPDATE',
                     valores_anteriores: $valores_anteriores,
                     valores_nuevos: $cambios,
-                    descripcion: "Campos actualizados: " . implode(', ', array_keys($cambios))
+                    descripcion: 'Campos actualizados: '.implode(', ', array_keys($cambios))
                 );
             }
         });

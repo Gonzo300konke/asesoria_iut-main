@@ -2,9 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * Eloquent model Usuario.
+ *
+ * @property int $id
+ * @property int $rol_id
+ * @property bool $is_admin
+ */
 class Usuario extends Authenticatable
 {
     use HasFactory;
@@ -32,7 +39,7 @@ class Usuario extends Authenticatable
 
     public function getNombreCompletoAttribute()
     {
-        return trim($this->nombre . ' ' . $this->apellido);
+        return trim($this->nombre.' '.$this->apellido);
     }
 
     /**
@@ -40,6 +47,7 @@ class Usuario extends Authenticatable
      */
     protected $hidden = [
         'hash_password',
+        'remember_token',
     ];
 
     /**
@@ -63,7 +71,7 @@ class Usuario extends Authenticatable
      */
     public function getAuthIdentifierName()
     {
-        return 'correo';
+        return 'correo'; // CORRECTO
     }
 
     /**
@@ -93,6 +101,7 @@ class Usuario extends Authenticatable
     /**
      * Verifica si el usuario es administrador.
      */
+    // En Usuario.php
     public function isAdmin(): bool
     {
         return $this->is_admin === true && $this->activo === true;
@@ -115,7 +124,7 @@ class Usuario extends Authenticatable
     public function canDeleteUser(Usuario $userToDelete): bool
     {
         // El usuario debe ser administrador
-        if (!$this->canDeleteData()) {
+        if (! $this->canDeleteData()) {
             return false;
         }
 
@@ -140,6 +149,3 @@ class Usuario extends Authenticatable
         return $this->isAdmin();
     }
 }
-
-
-

@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class TipoResponsable extends Model
 {
     protected $table = 'tipos_responsables';
+
     public $timestamps = false;
+
     protected $fillable = ['nombre'];
 
     public function responsables()

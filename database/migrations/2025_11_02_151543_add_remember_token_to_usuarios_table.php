@@ -10,7 +10,7 @@ class AddRememberTokenToUsuariosTable extends Migration
     {
         Schema::table('usuarios', function (Blueprint $table) {
             // Añade la columna después de hash_password; ajusta si quieres otra posición
-            if (!Schema::hasColumn('usuarios', 'remember_token')) {
+            if (! Schema::hasColumn('usuarios', 'remember_token')) {
                 $table->string('remember_token', 100)->nullable()->after('hash_password');
             }
         });
@@ -25,4 +25,3 @@ class AddRememberTokenToUsuariosTable extends Migration
         });
     }
 }
-

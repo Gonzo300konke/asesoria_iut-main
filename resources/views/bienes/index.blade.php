@@ -36,7 +36,7 @@
                                 <td class="px-6 py-4 text-sm text-gray-900 font-mono">{{ $bien->codigo }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-900">{{ $bien->descripcion }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ $bien->dependencia->nombre ?? '-' }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">{{ $bien->responsable->nombre ?? '-' }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">{{ $bien->dependencia->responsable->nombre ?? '-' }}</td>
                                 <td class="px-6 py-4 text-sm">
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full
                                         {{ $bien->estado->value === 'activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -48,23 +48,12 @@
                                     {{ optional($bien->fecha_registro)->format('d/m/Y') }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-right space-x-2">
-                                    <a href="{{ route('bienes.show', $bien) }}"
-                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100">
-                                        <x-heroicon-o-eye class="w-4 h-4 mr-1"/> Ver
-                                    </a>
-                                    <a href="{{ route('bienes.edit', $bien) }}"
-                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-yellow-600 bg-yellow-50 rounded hover:bg-yellow-100">
-                                        <x-heroicon-o-pencil-square class="w-4 h-4 mr-1"/> Editar
-                                    </a>
-                                    <form action="{{ route('bienes.destroy', $bien) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                onclick="return confirm('¿Seguro que deseas eliminar este bien?')"
-                                                class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded hover:bg-red-100">
-                                            <x-heroicon-o-trash class="w-4 h-4 mr-1"/> Eliminar
-                                        </button>
-                                    </form>
+                                    @include('components.action-buttons', [
+                                        'resource' => 'bienes',
+                                        'model' => $bien,
+                                        'confirm' => "¿Seguro que deseas eliminar este bien?",
+                                        'label' => $bien->codigo
+                                    ])
                                 </td>
                             </tr>
                         @empty

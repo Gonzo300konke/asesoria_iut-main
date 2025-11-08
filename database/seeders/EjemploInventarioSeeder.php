@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Organismo;
-use App\Models\UnidadAdministradora;
-use App\Models\Dependencia;
 use App\Models\Bien;
-use App\Models\Usuario;
+use App\Models\Dependencia;
+use App\Models\Organismo;
 use App\Models\Responsable;
 use App\Models\TipoResponsable;
+use App\Models\UnidadAdministradora;
+use App\Models\Usuario;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -46,10 +46,20 @@ class EjemploInventarioSeeder extends Seeder
             ['tipo_id' => $tipoResponsable->id, 'nombre' => 'ENRY GÓMEZ MAIZ', 'correo' => 'enry.gomez@edu.ve']
         );
 
-        // 6. Crear Usuario Administrador
+        // Asignar el responsable a la dependencia (ahora la dependencia almacena el responsable)
+        $dependencia->responsable_id = $responsablePrimario->id;
+        $dependencia->save();
+
+        // 6. Crear Usuario Administrador (usamos rol dinámico)
+        $rolAdmin = \App\Models\Rol::firstOrCreate([
+            'nombre' => 'Administrador'
+        ], [
+            'permisos' => []
+        ]);
+
         $usuarioAdmin = Usuario::firstOrCreate(
             ['correo' => 'enry.gomez@edu.ve'],
-            ['rol_id' => 1, 'cedula' => '3873777', 'nombre' => 'ENRY GÓMEZ MAIZ', 'hash_password' => Hash::make('Admin123'), 'activo' => true]
+            ['rol_id' => $rolAdmin->id, 'cedula' => '3873777', 'nombre' => 'ENRY GÓMEZ MAIZ', 'hash_password' => Hash::make('Admin123'), 'activo' => true]
         );
 
         // 7. Crear algunos bienes de ejemplo
@@ -58,7 +68,6 @@ class EjemploInventarioSeeder extends Seeder
                 'codigo' => 'BN-2024-001',
                 'descripcion' => 'Computadora de Escritorio Dell',
                 'dependencia_id' => $dependencia->id,
-                'responsable_id' => $responsablePrimario->id,
                 'ubicacion' => 'Oficina 101',
                 'estado' => 'ACTIVO',
                 'fecha_registro' => '2024-01-15',
@@ -67,7 +76,6 @@ class EjemploInventarioSeeder extends Seeder
                 'codigo' => 'BN-2024-002',
                 'descripcion' => 'Impresora Multifunción HP',
                 'dependencia_id' => $dependencia->id,
-                'responsable_id' => $responsablePrimario->id,
                 'ubicacion' => 'Sala de Copias',
                 'estado' => 'ACTIVO',
                 'fecha_registro' => '2024-01-20',
@@ -76,7 +84,6 @@ class EjemploInventarioSeeder extends Seeder
                 'codigo' => 'BN-2024-003',
                 'descripcion' => 'Escritorio de Metal',
                 'dependencia_id' => $dependencia->id,
-                'responsable_id' => $responsablePrimario->id,
                 'ubicacion' => 'Oficina 102',
                 'estado' => 'ACTIVO',
                 'fecha_registro' => '2024-02-01',
@@ -85,7 +92,6 @@ class EjemploInventarioSeeder extends Seeder
                 'codigo' => 'BN-2024-004',
                 'descripcion' => 'Sillas ergonómicas (5 unidades)',
                 'dependencia_id' => $dependencia->id,
-                'responsable_id' => $responsablePrimario->id,
                 'ubicacion' => 'Sala de Reuniones',
                 'estado' => 'ACTIVO',
                 'fecha_registro' => '2024-02-10',
@@ -94,7 +100,6 @@ class EjemploInventarioSeeder extends Seeder
                 'codigo' => 'BN-2024-005',
                 'descripcion' => 'Monitor LG 27 pulgadas',
                 'dependencia_id' => $dependencia->id,
-                'responsable_id' => $responsablePrimario->id,
                 'ubicacion' => 'Oficina 101',
                 'estado' => 'ACTIVO',
                 'fecha_registro' => '2024-02-15',
@@ -108,15 +113,15 @@ class EjemploInventarioSeeder extends Seeder
         $this->command->info('✓ Ejemplo de inventario creado exitosamente');
         $this->command->line('');
         $this->command->info('Datos creados:');
-        $this->command->line('├─ Organismo: ' . $organismo->nombre);
-        $this->command->line('├─ Unidad: ' . $unidad->nombre);
-        $this->command->line('├─ Dependencia: ' . $dependencia->nombre);
-        $this->command->line('├─ Responsable: ' . $responsablePrimario->nombre);
-        $this->command->line('├─ Usuario: ' . $usuarioAdmin->nombre);
-        $this->command->line('└─ Bienes: ' . count($bienes) . ' artículos');
+        $this->command->line('├─ Organismo: '.$organismo->nombre);
+        $this->command->line('├─ Unidad: '.$unidad->nombre);
+        $this->command->line('├─ Dependencia: '.$dependencia->nombre);
+        $this->command->line('├─ Responsable: '.$responsablePrimario->nombre);
+        $this->command->line('├─ Usuario: '.$usuarioAdmin->nombre);
+        $this->command->line('└─ Bienes: '.count($bienes).' artículos');
         $this->command->line('');
         $this->command->info('Puede iniciar sesión con:');
-        $this->command->line('Email: ' . $usuarioAdmin->correo);
+        $this->command->line('Email: '.$usuarioAdmin->correo);
         $this->command->line('Contraseña: Admin123');
     }
 }

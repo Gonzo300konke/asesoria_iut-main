@@ -5,6 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Eloquent model UnidadAdministradora.
+ *
+ * @property int $id
+ */
 class UnidadAdministradora extends Model
 {
     use HasFactory;
@@ -40,4 +45,3 @@ class UnidadAdministradora extends Model
         return $this->hasMany(Dependencia::class);
     }
 }
-

@@ -12,7 +12,7 @@ class RedirigirPorRol
     {
         $usuario = \Illuminate\Support\Facades\Auth::user();
 
-        if (!$usuario) {
+        if (! $usuario) {
             return redirect('/login');
         }
 
@@ -31,5 +31,3 @@ class RedirigirPorRol
         return $next($request);
     }
 }
-
-

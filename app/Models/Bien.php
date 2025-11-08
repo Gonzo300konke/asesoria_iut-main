@@ -6,6 +6,11 @@ use App\Enums\EstadoBien;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Eloquent model Bien.
+ *
+ * @property int $id
+ */
 class Bien extends Model
 {
     use HasFactory;
@@ -16,7 +21,6 @@ class Bien extends Model
     // Atributos asignables en masa
     protected $fillable = [
         'dependencia_id',
-        'responsable_id',
         'codigo',
         'descripcion',
         'ubicacion',
@@ -36,14 +40,9 @@ class Bien extends Model
         return $this->belongsTo(Dependencia::class);
     }
 
-    public function responsable()
-    {
-        return $this->belongsTo(Responsable::class);
-    }
 
     public function movimientos()
     {
         return $this->hasMany(Movimiento::class);
     }
 }
-

@@ -20,12 +20,13 @@
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-3xl font-bold text-gray-800">{{ $usuario->nombre_completo }}</h1>
             <div class="space-x-2">
-                <a href="{{ route('usuarios.edit', $usuario->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 inline-block">
-                    Editar
-                </a>
-                <a href="{{ route('usuarios.index') }}" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 inline-block">
-                    Volver a Usuarios
-                </a>
+                @include('components.action-buttons', [
+                    'resource' => 'usuarios',
+                    'model' => $usuario,
+                    'canDelete' => auth()->user()->canDeleteUser($usuario),
+                    'confirm' => '¿Estás seguro? No podrás deshacer esta acción.',
+                    'label' => $usuario->nombre_completo
+                ])
             </div>
         </div>
 
@@ -33,23 +34,23 @@
             <!-- Información Personal -->
             <div class="border border-gray-200 rounded-lg p-4">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Información Personal</h2>
-                
+
                 <div class="space-y-3">
                     <div>
                         <p class="text-sm text-gray-600">Nombre</p>
                         <p class="text-base font-medium text-gray-800">{{ $usuario->nombre }}</p>
                     </div>
-                    
+
                     <div>
                         <p class="text-sm text-gray-600">Apellido</p>
                         <p class="text-base font-medium text-gray-800">{{ $usuario->apellido }}</p>
                     </div>
-                    
+
                     <div>
                         <p class="text-sm text-gray-600">Cédula</p>
                         <p class="text-base font-medium text-gray-800">{{ $usuario->cedula }}</p>
                     </div>
-                    
+
                     <div>
                         <p class="text-sm text-gray-600">Correo</p>
                         <p class="text-base font-medium text-gray-800 break-all">{{ $usuario->correo }}</p>
@@ -60,7 +61,7 @@
             <!-- Información del Sistema -->
             <div class="border border-gray-200 rounded-lg p-4">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Información del Sistema</h2>
-                
+
                 <div class="space-y-3">
                     <div>
                         <p class="text-sm text-gray-600">Rol</p>
@@ -70,7 +71,7 @@
                             </span>
                         </div>
                     </div>
-                    
+
                     <div>
                         <p class="text-sm text-gray-600">Estado</p>
                         <div class="mt-1">
@@ -85,7 +86,7 @@
                             @endif
                         </div>
                     </div>
-                    
+
                     @if($usuario->is_admin)
                         <div>
                             <p class="text-sm text-gray-600">Permisos</p>
@@ -96,14 +97,14 @@
                             </div>
                         </div>
                     @endif
-                    
+
                     <div>
                         <p class="text-sm text-gray-600">Fecha de Creación</p>
                         <p class="text-base font-medium text-gray-800">
                             {{ $usuario->created_at->format('d/m/Y H:i') }}
                         </p>
                     </div>
-                    
+
                     <div>
                         <p class="text-sm text-gray-600">Última Actualización</p>
                         <p class="text-base font-medium text-gray-800">
@@ -132,7 +133,7 @@
                     <p class="text-sm text-blue-600 font-medium">Reportes Generados</p>
                     <p class="text-3xl font-bold text-blue-800">{{ $usuario->reportes->count() }}</p>
                 </div>
-                
+
                 <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
                     <p class="text-sm text-indigo-600 font-medium">Movimientos Registrados</p>
                     <p class="text-3xl font-bold text-indigo-800">{{ $usuario->movimientos->count() }}</p>

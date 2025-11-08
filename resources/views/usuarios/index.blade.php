@@ -44,17 +44,14 @@
                             <span class="inline-flex px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Inactivo</span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-sm space-x-2">
-                        <a href="{{ route('usuarios.edit', $usuario) }}" class="text-blue-600 hover:underline">Editar</a>
-                        @if(auth()->user()->canDeleteUser($usuario))
-                            <form method="POST" action="{{ route('usuarios.destroy', $usuario) }}" style="display: inline;" onsubmit="return confirm('¿Estás seguro? No podrás deshacer esta acción.');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
-                            </form>
-                        @else
-                            <span class="text-gray-400 text-sm">No puedes eliminar</span>
-                        @endif
+                    <td class="px-6 py-4 text-sm text-right space-x-2">
+                        @include('components.action-buttons', [
+                            'resource' => 'usuarios',
+                            'model' => $usuario,
+                            'canDelete' => auth()->user()->canDeleteUser($usuario),
+                            'confirm' => '¿Estás seguro? No podrás deshacer esta acción.',
+                            'label' => $usuario->nombre_completo
+                        ])
                     </td>
                 </tr>
             @empty

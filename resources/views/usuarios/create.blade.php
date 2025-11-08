@@ -6,13 +6,13 @@
 <div class="max-w-2xl mx-auto">
     <div class="bg-white shadow rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Crear Nuevo Usuario</h1>
-        
+
         @if(!auth()->user()->isAdmin())
             <div class="mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-700 rounded">
                 <p class="text-sm">Solo puedes crear usuarios normales. Para crear administradores, contacta a un administrador existente.</p>
             </div>
         @endif
-        
+
         @if ($errors->any())
             <div class="mb-4 p-4 bg-red-100 border border-red-300 text-red-800 rounded">
                 <ul class="text-sm">
@@ -28,7 +28,7 @@
 
             <div>
                 <label for="cedula" class="block text-sm font-medium text-gray-700">Cédula (Formato: V-XX.XXX.XXX)</label>
-                <input type="text" name="cedula" id="cedula" value="{{ old('cedula') }}" 
+                <input type="text" name="cedula" id="cedula" value="{{ old('cedula') }}"
                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                        placeholder="V-12.345.678"
                        maxlength="20"
@@ -43,7 +43,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-                    <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}" 
+                    <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}"
                            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                            placeholder="Ej: Juan"
                            required>
@@ -55,7 +55,7 @@
 
                 <div>
                     <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
-                    <input type="text" name="apellido" id="apellido" value="{{ old('apellido') }}" 
+                    <input type="text" name="apellido" id="apellido" value="{{ old('apellido') }}"
                            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                            placeholder="Ej: Pérez"
                            required>
@@ -68,7 +68,7 @@
 
             <div>
                 <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
-                <input type="email" name="correo" id="correo" value="{{ old('correo') }}" 
+                <input type="email" name="correo" id="correo" value="{{ old('correo') }}"
                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                        placeholder="usuario@ejemplo.com"
                        required>
@@ -78,12 +78,14 @@
                 @enderror
             </div>
 
-            <!-- Campo rol_id oculto - se establece desde los permisos -->
-            <input type="hidden" name="rol_id" id="rol_id" value="2">
+            <!-- El rol se selecciona dinámicamente si el creador es admin; por defecto es Usuario Normal -->
+            @unless(auth()->user()->isAdmin())
+                <input type="hidden" name="rol_id" id="rol_id" value="{{ old('rol_id') ?: \App\Models\Rol::where('nombre', 'Usuario Normal')->value('id') }}">
+            @endunless
 
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Contraseña (mínimo 8 caracteres)</label>
-                <input type="password" name="hash_password" id="password" 
+                <input type="password" name="hash_password" id="password"
                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                        placeholder="••••••••"
                        required>
@@ -95,36 +97,24 @@
 
             @if(auth()->user()->isAdmin())
                 <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <h3 class="text-sm font-semibold text-gray-800 mb-3">Permisos del Usuario</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-start">
-                            <input type="radio" name="user_type" id="user_type_admin" value="admin" 
-                                   class="rounded-full border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500 mt-1"
-                                   {{ old('user_type') === 'admin' ? 'checked' : '' }}>
-                            <label for="user_type_admin" class="ml-3 block text-sm font-medium text-gray-700">
-                                <span class="font-semibold">Usuario Administrador</span>
-                                <p class="text-xs text-gray-600 font-normal mt-1">Puede gestionar usuarios y crear otros administradores. Tiene permisos totales del sistema.</p>
-                            </label>
-                        </div>
-                        <div class="flex items-start">
-                            <input type="radio" name="user_type" id="user_type_normal" value="normal" 
-                                   class="rounded-full border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500 mt-1"
-                                   {{ old('user_type') !== 'admin' ? 'checked' : '' }}>
-                            <label for="user_type_normal" class="ml-3 block text-sm font-medium text-gray-700">
-                                <span class="font-semibold">Usuario Normal</span>
-                                <p class="text-xs text-gray-600 font-normal mt-1">Puede crear organismos, unidades, dependencias, bienes y movimientos. Sin permisos de gestión de usuarios.</p>
-                            </label>
-                        </div>
-                    </div>
+                    <h3 class="text-sm font-semibold text-gray-800 mb-3">Rol del Usuario</h3>
+                    <select name="rol_id" id="rol_id_select" class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        @foreach($roles as $rol)
+                            <option value="{{ $rol->id }}" {{ (old('rol_id') == $rol->id) ? 'selected' : '' }}>{{ $rol->nombre }}</option>
+                        @endforeach
+                    </select>
+                    @error('rol_id')
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-                <!-- Campo oculto para enviar is_admin (por defecto 0: usuario normal) -->
+                <!-- Campo oculto para enviar is_admin (se ajusta en el servidor según el rol seleccionado) -->
                 <input type="hidden" name="is_admin" id="is_admin" value="0">
             @endif
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Activo</label>
                 <div class="flex items-center">
-                    <input type="checkbox" name="activo" id="activo" value="1" 
+                    <input type="checkbox" name="activo" id="activo" value="1"
                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                            {{ old('activo', true) ? 'checked' : '' }}>
                     <label for="activo" class="ml-2 block text-sm text-gray-700">
@@ -152,7 +142,7 @@
         <div id="modal-header" class="px-6 py-4 border-b">
             <h2 id="modal-title" class="text-xl font-bold"></h2>
         </div>
-        
+
         <!-- Contenido -->
         <div class="px-6 py-4">
             <div class="flex items-start gap-4">
@@ -163,7 +153,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Botones -->
         <div class="px-6 py-4 border-t flex gap-3 justify-end">
             <button id="modal-close-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400" onclick="cerrarModal()">
@@ -184,15 +174,15 @@
 
     cedulaInput.addEventListener('input', function(e) {
         let value = e.target.value.toUpperCase();
-        
+
         // Remover caracteres que no sean V, - y números
         value = value.replace(/[^V0-9\-]/g, '');
-        
+
         // Si comienza con V, procesarlo con el formato correcto
         if (value.startsWith('V')) {
             // Extraer solo los números después de V
             const numbers = value.substring(1).replace(/[^0-9]/g, '');
-            
+
             if (numbers.length === 0) {
                 value = 'V-';
             } else if (numbers.length <= 2) {
@@ -208,7 +198,7 @@
         } else {
             value = 'V-';
         }
-        
+
         e.target.value = value;
         validarCedula(value);
     });
@@ -219,19 +209,19 @@
 
     function validarCedula(cedula) {
         const regex = /^V-\d{2}\.\d{3}\.\d{3}$/;
-        
+
         if (cedula.trim() === '' || cedula === 'V-') {
             cedulaError.textContent = '';
             cedulaError.style.display = 'none';
             return true;
         }
-        
+
         if (!regex.test(cedula)) {
             cedulaError.textContent = 'Formato inválido. Debe ser: V-XX.XXX.XXX';
             cedulaError.style.display = 'block';
             return false;
         }
-        
+
         cedulaError.textContent = '';
         cedulaError.style.display = 'none';
         return true;
@@ -246,36 +236,8 @@
         }
     });
 
-    // Manejar selección de tipo de usuario (solo visible para admins)
-    const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
-    const isAdminInput = document.getElementById('is_admin');
-    const rolIdInput = document.getElementById('rol_id');
-
-    userTypeRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'admin') {
-                // Usuario Administrador
-                isAdminInput.value = '1';
-                rolIdInput.value = '1'; // ID del rol Administrador
-            } else if (this.value === 'normal') {
-                // Usuario Normal (Data Entry)
-                isAdminInput.value = '0';
-                rolIdInput.value = '2'; // ID del rol Usuario Normal
-            }
-        });
-    });
-
-    // Inicializar el valor según selección inicial
-    const selectedUserType = document.querySelector('input[name="user_type"]:checked');
-    if (selectedUserType && isAdminInput) {
-        if (selectedUserType.value === 'admin') {
-            isAdminInput.value = '1';
-            rolIdInput.value = '1';
-        } else if (selectedUserType.value === 'normal') {
-            isAdminInput.value = '0';
-            rolIdInput.value = '2';
-        }
-    }
+    // Si el creador es admin, el formulario incluye un <select name="rol_id"> y no es necesario
+    // mantener la lógica previa de radios/ID hardcodeados en JS.
 
     // Elementos de entrada
     const nombreInput = document.getElementById('nombre');
@@ -319,7 +281,7 @@
     function validarCorreo() {
         const correo = correoInput.value.trim();
         const esValido = correoInput.checkValidity() && correo.length > 0;
-        
+
         if (correo.length > 0 && !esValido) {
             correoErrorEl.textContent = 'Correo inválido. Usa formato: usuario@ejemplo.com';
             correoErrorEl.style.display = 'block';
@@ -332,7 +294,7 @@
     function validarPassword() {
         const password = passwordInput.value;
         const esValido = password.length >= 8;
-        
+
         if (password.length > 0 && !esValido) {
             passwordErrorEl.textContent = `La contraseña debe tener al menos 8 caracteres (${password.length}/8)`;
             passwordErrorEl.style.display = 'block';
@@ -465,7 +427,7 @@
                 // Error de validación
                 const errors = await response.json();
                 let errorMsg = 'Error en los datos ingresados:\n';
-                
+
                 if (errors.errors.cedula) {
                     errorMsg = errors.errors.cedula[0];
                 } else if (errors.errors.correo) {
