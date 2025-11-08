@@ -83,7 +83,7 @@ use Illuminate\Support\Str;
                         <p class="text-sm text-gray-600">Movimientos registrados</p>
                         <p class="text-base font-medium text-gray-800">{{ $bien->movimientos->count() }}</p>
                     </div>
-                    
+
                     <div>
                         <p class="text-sm text-gray-600">Fecha de Registro</p>
                         <p class="text-base font-medium text-gray-800">{{ $bien->created_at?->format('d/m/Y H:i') }}</p>
