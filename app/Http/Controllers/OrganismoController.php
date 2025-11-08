@@ -52,6 +52,17 @@ class OrganismoController extends Controller
     }
 
     /**
+     * Mostrar el formulario de edición de un organismo.
+     */
+    public function edit(Organismo $organismo)
+    {
+        // Cargar relaciones que el formulario pueda necesitar
+        $organismo->load('unidadesAdministradoras');
+
+        return view('organismos.edit', compact('organismo'));
+    }
+
+    /**
      * Actualizar un organismo.
      */
     public function update(Request $request, Organismo $organismo)

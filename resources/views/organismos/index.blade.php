@@ -35,16 +35,12 @@
                                 <td class="px-6 py-4 text-sm text-gray-900">{{ $organismo->codigo }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-900">{{ $organismo->nombre }}</td>
                                 <td class="px-6 py-4 text-sm text-right space-x-2">
-                                    <a href="{{ route('organismos.show', $organismo) }}"
-                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100">
-                                        <x-heroicon-o-eye class="w-4 h-4 mr-1"/> Ver
-                                    </a>
-                                        @include('components.action-buttons', [
-                                            'resource' => 'organismos',
-                                            'model' => $organismo,
-                                            'confirm' => '¿Estás seguro?',
-                                            'label' => $organismo->nombre
-                                        ])
+                                    @include('components.action-buttons', [
+                                        'resource' => 'organismos',
+                                        'model' => $organismo,
+                                        'confirm' => '¿Estás seguro?',
+                                        'label' => $organismo->nombre
+                                    ])
                                 </td>
                             </tr>
                         @empty

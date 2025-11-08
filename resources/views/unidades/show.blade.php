@@ -7,13 +7,26 @@
 use Illuminate\Support\Str;
 @endphp
 <div class="max-w-3xl mx-auto">
+    @if (session('success'))
+        <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">✓</span>
+                <div>
+                    <p class="font-bold">¡Éxito!</p>
+                    <p class="text-sm">{{ session('success') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="bg-white shadow rounded-lg p-6">
         <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">Unidad: {{ $unidadAdministradora->codigo }} — {{ $unidadAdministradora->nombre }}</h1>
+            <h1 class="text-3xl font-bold text-gray-800">Unidad: {{ $unidadAdministradora->codigo }} — {{ $unidadAdministradora->nombre }}</h1>
             <div class="space-x-2">
                 @include('components.action-buttons', [
                     'resource' => 'unidades',
                     'model' => $unidadAdministradora,
+                    'canDelete' => auth()->user()->canDeleteData(),
                     'confirm' => "¿Seguro que deseas eliminar esta unidad?",
                     'label' => $unidadAdministradora->nombre
                 ])
@@ -38,6 +51,14 @@ use Illuminate\Support\Str;
                     <div>
                         <p class="text-sm text-gray-600">Organismo</p>
                         <p class="text-base font-medium text-gray-800">{{ $unidadAdministradora->organismo->nombre ?? '—' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Fecha de Creación</p>
+                        <p class="text-base font-medium text-gray-800">{{ $unidadAdministradora->created_at?->format('d/m/Y H:i') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Última Actualización</p>
+                        <p class="text-base font-medium text-gray-800">{{ $unidadAdministradora->updated_at?->format('d/m/Y H:i') }}</p>
                     </div>
                 </div>
             </div>
