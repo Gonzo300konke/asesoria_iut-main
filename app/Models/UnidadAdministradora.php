@@ -28,6 +28,17 @@ class UnidadAdministradora extends Model
         'codigo',
         'nombre',
     ];
+    // App\Models\UnidadAdministradora.php
+    public function scopeSearch($query, $term)
+    {
+        if ($term) {
+            $query->where(function ($q) use ($term) {
+                $q->where('codigo', 'LIKE', "%{$term}%")
+                ->orWhere('nombre', 'LIKE', "%{$term}%");
+            });
+        }
+    }
+
 
     /**
      * Relación: Una Unidad Administradora pertenece a un Organismo.

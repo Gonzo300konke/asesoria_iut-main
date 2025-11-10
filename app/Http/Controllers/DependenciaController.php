@@ -12,12 +12,18 @@ class DependenciaController extends Controller
     /**
      * Listar todas las dependencias.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $dependencias = Dependencia::with(['unidadAdministradora', 'bienes'])->paginate(10);
+        $search = $request->input('search');
 
-        return view('dependencias.index', compact('dependencias'));
+        $dependencias = Dependencia::with(['unidadAdministradora', 'bienes', 'responsable'])
+            ->search($search)
+            ->paginate(10)
+            ->appends(['search' => $search]);
+
+        return view('dependencias.index', compact('dependencias', 'search'));
     }
+
 
     /**
      * Guardar una nueva dependencia.

@@ -28,6 +28,19 @@ class Bien extends Model
         'fecha_registro',
     ];
 
+    // App\Models\Bien.php
+    public function scopeSearch($query, $term)
+    {
+        if ($term) {
+            $query->where(function ($q) use ($term) {
+                $q->where('codigo', 'LIKE', "%{$term}%")
+                ->orWhere('descripcion', 'LIKE', "%{$term}%")
+                ->orWhere('ubicacion', 'LIKE', "%{$term}%");
+            });
+        }
+    }
+
+
     // Casts automáticos
     protected $casts = [
         'fecha_registro' => 'datetime',

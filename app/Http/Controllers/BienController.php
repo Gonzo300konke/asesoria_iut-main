@@ -13,14 +13,18 @@ class BienController extends Controller
      * Listar todos los bienes.
      */
     // BienController.php
-    public function index()
+        public function index(Request $request)
     {
-        // Incluimos relaciones para evitar N+1
-    // Ahora el responsable se obtiene a través de la dependencia
-    $bienes = Bien::with(['dependencia.responsable', 'movimientos'])->paginate(10);
+        $search = $request->input('search');
 
-        return view('bienes.index', compact('bienes')); // Only passes $bienes
+        $bienes = Bien::with(['dependencia.responsable', 'movimientos'])
+            ->search($search) // usamos el scope
+            ->paginate(10)
+            ->appends(['search' => $search]); // mantiene el término en la paginación
+
+        return view('bienes.index', compact('bienes', 'search'));
     }
+
 
     /**
      * Mostrar formulario de creación.
@@ -47,6 +51,8 @@ class BienController extends Controller
             'fecha_registro' => ['required', 'date'],
         ]);
 
+
+
     // El responsable se obtiene dinámicamente a través de la dependencia; no lo almacenamos en la tabla bienes.
     $bien = Bien::create($validated);
 
@@ -54,6 +60,8 @@ class BienController extends Controller
             ->route('bienes.index')
             ->with('success', 'Bien creado correctamente.');
     }
+
+
 
     /**
      * Mostrar un bien específico.
@@ -123,4 +131,5 @@ class BienController extends Controller
             ->route('bienes.index')
             ->with('success', 'Bien eliminado correctamente.');
     }
+
 }
